@@ -27,6 +27,8 @@ with mujoco.viewer.launch_passive(model, data, key_callback=key_callback) as vie
         # Example modification of a viewer option: toggle contact points every two seconds.
         with viewer.lock():
             viewer.opt.flags[mujoco.mjtVisFlag.mjVIS_JOINT] = int(data.time % 2)
+            viewer.opt.flags[mujoco.mjtVisFlag.mjVIS_ACTUATOR] = 1 - int(data.time % 2)
+            viewer.opt.flags[mujoco.mjtVisFlag.mjVIS_INERTIA] = int(data.time % 2)
 
         # Synchronize the viewer
         viewer.sync()

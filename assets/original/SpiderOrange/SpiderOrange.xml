@@ -5,7 +5,7 @@
       <joint type="ball" range="0 45"/>
     </default>
     <default class="Leg_001_Joint">
-      <joint type="hinge" range="-35 35"/>
+      <joint type="hinge" range="-15 15"/>
     </default>
     <default class="Leg_002_Joint">
       <joint type="hinge" range="-15 15"/>
@@ -101,5 +101,19 @@
       </body>
     </body>
   </worldbody>
+  <actuator>
+    <motor name="FL_Leg_Motor" joint="FL_Leg_Joint"/>
+    <motor name="FL_Leg_001_Motor" joint="FL_Leg_001_Joint"/>
+    <motor name="FL_Leg_002_Motor" joint="FL_Leg_002_Joint"/>
+    <motor name="FR_Leg_Motor" joint="FR_Leg_Joint"/>
+    <motor name="FR_Leg_001_Motor" joint="FR_Leg_001_Joint"/>
+    <motor name="FR_Leg_002_Motor" joint="FR_Leg_002_Joint"/>
+    <motor name="BR_Leg_Motor" joint="BR_Leg_Joint"/>
+    <motor name="BR_Leg_001_Motor" joint="BR_Leg_001_Joint"/>
+    <motor name="BR_Leg_002_Motor" joint="BR_Leg_002_Joint"/>
+    <motor name="BL_Leg_Motor" joint="BL_Leg_Joint"/>
+    <motor name="BL_Leg_001_Motor" joint="BL_Leg_001_Joint"/>
+    <motor name="BL_Leg_002_Motor" joint="BL_Leg_002_Joint"/>
+  </actuator>
 </mujoco>
 
