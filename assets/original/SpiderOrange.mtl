@@ -1,0 +1,170 @@
+# Blender 5.1.1 MTL File: 'SpiderOrange.blend'
+# www.blender.org
+
+newmtl Body_MAT
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_AlbedoTransparency.png
+map_refl SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_MetallicSmoothness.png
+map_Bump -bm 1.000000 SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_Normal.png
+
+newmtl Leg.BL.001_MAT
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_AlbedoTransparency.png
+map_refl SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_MetallicSmoothness.png
+map_Bump -bm 1.000000 SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_Normal.png
+
+newmtl Leg.BL.002_MAT
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_AlbedoTransparency.png
+map_refl SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_MetallicSmoothness.png
+map_Bump -bm 1.000000 SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_Normal.png
+
+newmtl Leg.BL_MAT
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_AlbedoTransparency.png
+map_refl SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_MetallicSmoothness.png
+map_Bump -bm 1.000000 SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_Normal.png
+
+newmtl Leg.BR.001_MAT
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_AlbedoTransparency.png
+map_refl SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_MetallicSmoothness.png
+map_Bump -bm 1.000000 SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_Normal.png
+
+newmtl Leg.BR.002_MAT
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_AlbedoTransparency.png
+map_refl SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_MetallicSmoothness.png
+map_Bump -bm 1.000000 SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_Normal.png
+
+newmtl Leg.BR_MAT
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_AlbedoTransparency.png
+map_refl SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_MetallicSmoothness.png
+map_Bump -bm 1.000000 SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_Normal.png
+
+newmtl Leg.FL.001_MAT
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_AlbedoTransparency.png
+map_refl SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_MetallicSmoothness.png
+map_Bump -bm 1.000000 SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_Normal.png
+
+newmtl Leg.FL.002_MAT
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_AlbedoTransparency.png
+map_refl SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_MetallicSmoothness.png
+map_Bump -bm 1.000000 SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_Normal.png
+
+newmtl Leg.FL_MAT
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_AlbedoTransparency.png
+map_refl SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_MetallicSmoothness.png
+map_Bump -bm 1.000000 SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_Normal.png
+
+newmtl Leg.FR.001_MAT
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_AlbedoTransparency.png
+map_refl SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_MetallicSmoothness.png
+map_Bump -bm 1.000000 SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_Normal.png
+
+newmtl Leg.FR.002_MAT
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_AlbedoTransparency.png
+map_refl SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_MetallicSmoothness.png
+map_Bump -bm 1.000000 SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_Normal.png
+
+newmtl Leg.FR_MAT
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_AlbedoTransparency.png
+map_refl SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_MetallicSmoothness.png
+map_Bump -bm 1.000000 SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_Normal.png
+
+newmtl Material.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_AlbedoTransparency.png
+map_refl SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_MetallicSmoothness.png
+map_Bump -bm 1.000000 SpiderOrangeUnity/Texture/NPCSpider_DefaultMaterial_Normal.png

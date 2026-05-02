@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<mujoco model="spider">
+  <asset>
+    <mesh name="my_mesh" file="Spider-Orange.obj"/>
+  </asset>
+  <worldbody>
+    <body>
+      <geom type="mesh" mesh="my_mesh"/>
+    </body>
+  </worldbody>
+</mujoco>

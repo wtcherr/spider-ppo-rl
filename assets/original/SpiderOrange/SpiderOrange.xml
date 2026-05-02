@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<mujoco model="SpiderOrange">
+  <default>
+    <default class="visual">
+      <geom group="2" type="mesh" contype="0" conaffinity="0"/>
+    </default>
+    <default class="collision">
+      <geom group="3" type="mesh"/>
+    </default>
+  </default>
+  <asset>
+    <texture type="2d" name="SpiderAlbedoTransparency" file="NPCSpider_DefaultMaterial_AlbedoTransparency.png"/>
+    <material name="Material.001" texture="SpiderAlbedoTransparency" specular="0.5" shininess="0.25"/>
+    <mesh file="Leg.FL.002.obj"/>
+    <mesh file="Leg.FL.001.obj"/>
+    <mesh file="Leg.FL.obj"/>
+    <mesh file="Leg.FR.002.obj"/>
+    <mesh file="Leg.FR.001.obj"/>
+    <mesh file="Leg.FR.obj"/>
+    <mesh file="Leg.BL.002.obj"/>
+    <mesh file="Leg.BL.001.obj"/>
+    <mesh file="Leg.BL.obj"/>
+    <mesh file="Leg.BR.002.obj"/>
+    <mesh file="Leg.BR.001.obj"/>
+    <mesh file="Leg.BR.obj"/>
+    <mesh file="Body.obj"/>
+  </asset>
+  <worldbody>
+    <body name="SpiderOrange">
+      <freejoint/>
+      <geom mesh="Leg.BR.002" material="Material.001" class="visual"/>
+      <geom mesh="Leg.BR.001" material="Material.001" class="visual"/>
+      <geom mesh="Leg.BR" material="Material.001" class="visual"/>
+      <geom mesh="Leg.FL.002" material="Material.001" class="visual"/>
+      <geom mesh="Leg.FL.001" material="Material.001" class="visual"/>
+      <geom mesh="Leg.FL" material="Material.001" class="visual"/>
+      <geom mesh="Leg.FR.002" material="Material.001" class="visual"/>
+      <geom mesh="Leg.FR.001" material="Material.001" class="visual"/>
+      <geom mesh="Leg.FR" material="Material.001" class="visual"/>
+      <geom mesh="Leg.BL.002" material="Material.001" class="visual"/>
+      <geom mesh="Leg.BL.001" material="Material.001" class="visual"/>
+      <geom mesh="Leg.BL" material="Material.001" class="visual"/>
+      <geom mesh="Body" material="Material.001" class="visual"/>
+      <geom mesh="Leg.FL.002" class="collision"/>
+      <geom mesh="Leg.FL.001" class="collision"/>
+      <geom mesh="Leg.FL" class="collision"/>
+      <geom mesh="Leg.FR.002" class="collision"/>
+      <geom mesh="Leg.FR.001" class="collision"/>
+      <geom mesh="Leg.FR" class="collision"/>
+      <geom mesh="Leg.BL.002" class="collision"/>
+      <geom mesh="Leg.BL.001" class="collision"/>
+      <geom mesh="Leg.BL" class="collision"/>
+      <geom mesh="Leg.BR.002" class="collision"/>
+      <geom mesh="Leg.BR.001" class="collision"/>
+      <geom mesh="Leg.BR" class="collision"/>
+      <geom mesh="Body" class="collision"/>
+    </body>
+  </worldbody>
+</mujoco>
+
