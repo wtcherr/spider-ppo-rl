@@ -1,6 +1,15 @@
 <?xml version="1.0"?>
 <mujoco model="SpiderOrange">
   <default>
+    <default class="Leg_Joint">
+      <joint type="ball" range="0 45"/>
+    </default>
+    <default class="Leg_001_Joint">
+      <joint type="hinge" range="-35 35"/>
+    </default>
+    <default class="Leg_002_Joint">
+      <joint type="hinge" range="-15 15"/>
+    </default>
     <default class="visual">
       <geom group="2" type="mesh" contype="0" conaffinity="0"/>
     </default>
@@ -11,49 +20,85 @@
   <asset>
     <texture type="2d" name="SpiderAlbedoTransparency" file="NPCSpider_DefaultMaterial_AlbedoTransparency.png"/>
     <material name="Material.001" texture="SpiderAlbedoTransparency" specular="0.5" shininess="0.25"/>
-    <mesh file="Leg.FL.002.obj"/>
-    <mesh file="Leg.FL.001.obj"/>
-    <mesh file="Leg.FL.obj"/>
-    <mesh file="Leg.FR.002.obj"/>
-    <mesh file="Leg.FR.001.obj"/>
-    <mesh file="Leg.FR.obj"/>
-    <mesh file="Leg.BL.002.obj"/>
-    <mesh file="Leg.BL.001.obj"/>
-    <mesh file="Leg.BL.obj"/>
-    <mesh file="Leg.BR.002.obj"/>
-    <mesh file="Leg.BR.001.obj"/>
-    <mesh file="Leg.BR.obj"/>
     <mesh file="Body.obj"/>
+    <mesh file="Leg.FL.obj"/>
+    <mesh file="Leg.FL.001.obj"/>
+    <mesh file="Leg.FL.002.obj"/>
+    <mesh file="Leg.FR.obj"/>
+    <mesh file="Leg.FR.001.obj"/>
+    <mesh file="Leg.FR.002.obj"/>
+    <mesh file="Leg.BR.obj"/>
+    <mesh file="Leg.BR.001.obj"/>
+    <mesh file="Leg.BR.002.obj"/>
+    <mesh file="Leg.BL.obj"/>
+    <mesh file="Leg.BL.001.obj"/>
+    <mesh file="Leg.BL.002.obj"/>
   </asset>
   <worldbody>
     <body name="SpiderOrange">
       <freejoint/>
-      <geom mesh="Leg.BR.002" material="Material.001" class="visual"/>
-      <geom mesh="Leg.BR.001" material="Material.001" class="visual"/>
-      <geom mesh="Leg.BR" material="Material.001" class="visual"/>
-      <geom mesh="Leg.FL.002" material="Material.001" class="visual"/>
-      <geom mesh="Leg.FL.001" material="Material.001" class="visual"/>
-      <geom mesh="Leg.FL" material="Material.001" class="visual"/>
-      <geom mesh="Leg.FR.002" material="Material.001" class="visual"/>
-      <geom mesh="Leg.FR.001" material="Material.001" class="visual"/>
-      <geom mesh="Leg.FR" material="Material.001" class="visual"/>
-      <geom mesh="Leg.BL.002" material="Material.001" class="visual"/>
-      <geom mesh="Leg.BL.001" material="Material.001" class="visual"/>
-      <geom mesh="Leg.BL" material="Material.001" class="visual"/>
       <geom mesh="Body" material="Material.001" class="visual"/>
-      <geom mesh="Leg.FL.002" class="collision"/>
-      <geom mesh="Leg.FL.001" class="collision"/>
-      <geom mesh="Leg.FL" class="collision"/>
-      <geom mesh="Leg.FR.002" class="collision"/>
-      <geom mesh="Leg.FR.001" class="collision"/>
-      <geom mesh="Leg.FR" class="collision"/>
-      <geom mesh="Leg.BL.002" class="collision"/>
-      <geom mesh="Leg.BL.001" class="collision"/>
-      <geom mesh="Leg.BL" class="collision"/>
-      <geom mesh="Leg.BR.002" class="collision"/>
-      <geom mesh="Leg.BR.001" class="collision"/>
-      <geom mesh="Leg.BR" class="collision"/>
       <geom mesh="Body" class="collision"/>
+      <body name="FL_Leg">
+        <joint name="FL_Leg_Joint" pos="-0.0516 0.0519 0.1365" class="Leg_Joint"/>
+        <geom mesh="Leg.FL" material="Material.001" class="visual"/>
+        <geom mesh="Leg.FL" class="collision"/>
+        <body name="FL_Leg_001">
+          <joint name="FL_Leg_001_Joint" pos="-0.1388 0.1391 0.2286" axis="1 1 0" class="Leg_001_Joint"/>
+          <geom mesh="Leg.FL.001" material="Material.001" class="visual"/>
+          <geom mesh="Leg.FL.001" class="collision"/>
+          <body name="FL_Leg_002">
+            <joint name="FL_Leg_002_Joint" pos="-0.1827 0.1830 0.1929" axis="1 1 0" class="Leg_002_Joint"/>
+            <geom mesh="Leg.FL.002" material="Material.001" class="visual"/>
+            <geom mesh="Leg.FL.002" class="collision"/>
+          </body>
+        </body>
+      </body>
+      <body name="FR_Leg">
+        <joint name="FR_Leg_Joint" pos="0.0533 0.0540 0.1375" class="Leg_Joint"/>
+        <geom mesh="Leg.FR" material="Material.001" class="visual"/>
+        <geom mesh="Leg.FR" class="collision"/>
+        <body name="FR_Leg_001">
+          <joint name="FR_Leg_001_Joint" pos="0.1382 0.1390 0.2279" axis="1 -1 0" class="Leg_001_Joint"/>
+          <geom mesh="Leg.FR.001" material="Material.001" class="visual"/>
+          <geom mesh="Leg.FR.001" class="collision"/>
+          <body name="FR_Leg_002">
+            <joint name="FR_Leg_002_Joint" pos="0.1822 0.1830 0.1929" axis="1 -1 0" class="Leg_002_Joint"/>
+            <geom mesh="Leg.FR.002" material="Material.001" class="visual"/>
+            <geom mesh="Leg.FR.002" class="collision"/>
+          </body>
+        </body>
+      </body>
+      <body name="BR_Leg">
+        <joint name="BR_Leg_Joint" pos="0.0528 -0.0525 0.1365" class="Leg_Joint"/>
+        <geom mesh="Leg.BR" material="Material.001" class="visual"/>
+        <geom mesh="Leg.BR" class="collision"/>
+        <body name="BR_Leg_001">
+          <joint name="BR_Leg_001_Joint" pos="0.1400 -0.1397 0.2286" axis="-1 -1 0" class="Leg_001_Joint"/>
+          <geom mesh="Leg.BR.001" material="Material.001" class="visual"/>
+          <geom mesh="Leg.BR.001" class="collision"/>
+          <body name="BR_Leg_002">
+            <joint name="BR_Leg_002_Joint" pos="0.1839 -0.1836 0.1929" axis="-1 -1 0" class="Leg_002_Joint"/>
+            <geom mesh="Leg.BR.002" material="Material.001" class="visual"/>
+            <geom mesh="Leg.BR.002" class="collision"/>
+          </body>
+        </body>
+      </body>
+      <body name="BL_Leg">
+        <joint name="BL_Leg_Joint" pos="-0.0543 -0.0536 0.1375" class="Leg_Joint"/>
+        <geom mesh="Leg.BL" material="Material.001" class="visual"/>
+        <geom mesh="Leg.BL" class="collision"/>
+        <body name="BL_Leg_001">
+          <joint name="BL_Leg_001_Joint" pos="-0.1393 -0.1385 0.2279" axis="-1 1 0" class="Leg_001_Joint"/>
+          <geom mesh="Leg.BL.001" material="Material.001" class="visual"/>
+          <geom mesh="Leg.BL.001" class="collision"/>
+          <body name="BL_Leg_002">
+            <joint name="BL_Leg_002_Joint" pos="-0.1833 -0.1825 0.1929" axis="-1 1 0" class="Leg_002_Joint"/>
+            <geom mesh="Leg.BL.002" material="Material.001" class="visual"/>
+            <geom mesh="Leg.BL.002" class="collision"/>
+          </body>
+        </body>
+      </body>
     </body>
   </worldbody>
 </mujoco>
