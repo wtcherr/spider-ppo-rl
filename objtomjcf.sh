@@ -1,2 +1,2 @@
-!#usr/bin/bash
-obj2mjcf --obj-dir assets/original/ --save-mjcf --overwrite --verbose
+#!/bin/bash
+obj2mjcf --obj-dir assets/original/Scaled/ --save-mjcf --overwrite --verbose

@@ -1,8 +1,13 @@
 <?xml version="1.0"?>
 <mujoco model="spider scene">
-  <!-- <include file="robo.xml"/> -->
+  <compiler angle="degree" coordinate="local" inertiafromgeom="true"/>
+  <option integrator="RK4" timestep="0.01"/>
+  <default>
+    <joint armature="1" damping="1" limited="true"/>
+    <geom conaffinity="0" condim="3" density="5.0" friction="1 0.5 0.5" margin="0.01" rgba="0.8 0.6 0.4 1"/>
+  </default>
   <include file="assets/original/SpiderOrange/SpiderOrange.xml"/>
-  <statistic center="0 0 0.1" extent="0.8"/>
+  <statistic center="0 0 0.1" extent="0.5"/>
   <visual>
     <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
     <rgba haze="0.15 0.25 0.35 1"/>
@@ -15,6 +20,6 @@
   </asset>
   <worldbody>
     <light pos="0 0 1.5" dir="0 0 -1" directional="true"/>
-    <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
+    <geom name="floor" pos="0 0 0" conaffinity="1" condim="3" size="0 0 0.05" type="plane" material="groundplane"/>
   </worldbody>
 </mujoco>
