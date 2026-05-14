@@ -2,8 +2,8 @@ import argparse
 import os
 import random
 import time
+import datetime
 from distutils.util import strtobool
-
 import gymnasium as gym
 import numpy as np
 import torch
@@ -195,7 +195,7 @@ def parse_args():
     parser.add_argument(
         "--ent-coef",
         type=float,
-        default=0.5,
+        default=0.01,
         help="coefficient of the entropy",
     )
     parser.add_argument(
@@ -347,6 +347,18 @@ if __name__ == "__main__":
         % ("\n".join([f"|{key}|{value}|" for key, value in vars(args).items()])),
     )
 
+    log_file_path = f"./runs/{run_name}/log.txt"
+
+    def log_to_file(message):
+        with open(log_file_path, "a", encoding="utf-8") as f:
+            f.write(message + "\n")
+        print(message)
+
+    log_to_file("Hyperparameters:")
+    for key, value in vars(args).items():
+        log_to_file(f"  {key}: {value}")
+    log_to_file(f"\n{'=' * 60}\n")
+
     # TRY NOT TO MODIFY: seeding
     random.seed(args.seed)
     np.random.seed(args.seed)
@@ -368,8 +380,17 @@ if __name__ == "__main__":
         envs.single_action_space, gym.spaces.Box
     ), "only continuous action space is supported"
 
+    log_to_file(f"Observation space: {envs.single_observation_space.shape}")
+    log_to_file(f"Action space: {envs.single_action_space.shape}")
+    log_to_file(f"\n{'=' * 60}\n")
+
     agent = Agent(envs).to(device)
     optimizer = optim.Adam(agent.parameters(), lr=args.learning_rate, eps=1e-5)
+
+    log_to_file(f"Critic model: {agent.critic}")
+    log_to_file(f"Actor mean model: {agent.actor_mean}")
+    log_to_file(f"Actor logstd model: {agent.actor_logstd}")
+    log_to_file(f"\n{'=' * 60}\n")
 
     # ALGO Logic: Storage setup
     obs = torch.zeros(
@@ -395,6 +416,7 @@ if __name__ == "__main__":
     episodic_reward_forward = np.zeros(args.num_envs)
     episodic_reward_ctrl = np.zeros(args.num_envs)
     episodic_reward_contact = np.zeros(args.num_envs)
+    episodic_reward_z_orientation = np.zeros(args.num_envs)
     episodic_reward_survive = np.zeros(args.num_envs)
 
     for update in range(1, num_updates + 1):
@@ -423,6 +445,7 @@ if __name__ == "__main__":
             episodic_reward_forward += info["reward_forward"]
             episodic_reward_ctrl += info["reward_ctrl"]
             episodic_reward_contact += info["reward_contact"]
+            episodic_reward_z_orientation += info["reward_z_orientation"]
             episodic_reward_survive += info["reward_survive"]
 
             rewards[step] = torch.Tensor(reward).to(device)
@@ -433,7 +456,7 @@ if __name__ == "__main__":
                 finished_envs = next_done.cpu().numpy().astype(bool)
                 episodic_return = sum(info["episode"]["r"][finished_envs])
                 episodic_length = sum(info["episode"]["l"][finished_envs])
-                print(
+                log_to_file(
                     f"global_step={global_step}, episodic_return={episodic_return}, episodic_length={episodic_length}"
                 )
                 writer.add_scalar(
@@ -458,6 +481,11 @@ if __name__ == "__main__":
                     global_step,
                 )
                 writer.add_scalar(
+                    "charts/episodic_reward_z_orientation",
+                    np.sum(episodic_reward_z_orientation[finished_envs]),
+                    global_step,
+                )
+                writer.add_scalar(
                     "charts/episodic_reward_survive",
                     np.sum(episodic_reward_survive[finished_envs]),
                     global_step,
@@ -465,6 +493,7 @@ if __name__ == "__main__":
                 episodic_reward_forward[finished_envs] = 0
                 episodic_reward_ctrl[finished_envs] = 0
                 episodic_reward_contact[finished_envs] = 0
+                episodic_reward_z_orientation[finished_envs] = 0
                 episodic_reward_survive[finished_envs] = 0
 
         # bootstrap value if not done
@@ -588,9 +617,20 @@ if __name__ == "__main__":
         writer.add_scalar("losses/approx_kl", approx_kl.item(), global_step)
         writer.add_scalar("losses/clipfrac", np.mean(clip_fracs), global_step)
         writer.add_scalar("losses/explained_variance", explained_var, global_step)
-        print("SPS:", int(global_step / (time.time() - start_time)))
+
+        elapsed_time = int(time.time() - start_time)
+        remaining_time = (
+            int(elapsed_time / global_step * (args.total_timesteps - global_step))
+            if global_step > 0
+            else 0
+        )
         writer.add_scalar(
-            "charts/SPS", int(global_step / (time.time() - start_time)), global_step
+            "charts/SPS", int(global_step / max(elapsed_time, 1)), global_step
+        )
+        log_to_file(
+            f"Steps/Second: {int(global_step / max(elapsed_time, 1))}, "
+            f"Elapsed time: {datetime.timedelta(seconds=elapsed_time)}, "
+            f"Remaining time: {datetime.timedelta(seconds=remaining_time)}"
         )
 
         # Checkpoint saving
@@ -600,7 +640,7 @@ if __name__ == "__main__":
             ):
                 checkpoint_path = f"runs/{run_name}/{args.exp_name}_{global_step}.pt"
                 agent.save(checkpoint_path)
-                print(f"checkpoint saved to {checkpoint_path}")
+                log_to_file(f"checkpoint saved to {checkpoint_path}")
 
     envs.close()
     writer.close()
@@ -608,4 +648,4 @@ if __name__ == "__main__":
     if args.save_model:
         model_path = f"runs/{run_name}/{args.exp_name}"
         agent.save(model_path)
-        print(f"model saved to {model_path}")
+        log_to_file(f"model saved to {model_path}")

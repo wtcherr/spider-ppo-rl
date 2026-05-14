@@ -3,13 +3,13 @@
   <compiler inertiafromgeom="true"/>
   <default>
     <default class="Leg_Joint">
-      <joint type="ball" range="0 60"/>
+      <joint type="ball" range="0 45"/>
     </default>
     <default class="Leg_001_Joint">
-      <joint type="hinge" range="-30 30"/>
+      <joint type="hinge" range="-20 20"/>
     </default>
     <default class="Leg_002_Joint">
-      <joint type="hinge" range="-30 30"/>
+      <joint type="hinge" range="-20 20"/>
     </default>
     <default class="visual">
       <geom group="2" type="mesh" contype="0" conaffinity="0"/>
@@ -18,7 +18,7 @@
       <geom group="3" type="mesh" density="800"/>
     </default>
     <default class="motor">
-      <motor ctrlrange="-1.0 1.0" gear="10"/>
+      <motor ctrlrange="-1.0 1.0" gear="15"/>
     </default>
   </default>
   <asset>
