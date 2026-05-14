@@ -18,7 +18,7 @@ class SpiderEnv(AntEnv):
         frame_skip: int = 5,
         default_camera_config: dict[str, float | int] = DEFAULT_CAMERA_CONFIG,
         forward_reward_weight: float = 5.0,
-        ctrl_cost_weight: float = 0.03,
+        ctrl_cost_weight: float = 0.035,
         contact_cost_weight: float = 5e-4,
         z_orientation_cost_weight: float = 30.0,
         healthy_reward: float = 1.0,

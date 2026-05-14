@@ -111,6 +111,12 @@ def parse_args():
         help="whether to save the model",
     )
     parser.add_argument(
+        "--model-path",
+        type=str,
+        default=None,
+        help="the path to the model to load",
+    )
+    parser.add_argument(
         "--checkpoint-interval",
         type=int,
         default=1_000_000,
@@ -385,6 +391,10 @@ if __name__ == "__main__":
     log_to_file(f"\n{'=' * 60}\n")
 
     agent = Agent(envs).to(device)
+    if args.model_path:
+        agent.load(args.model_path, device)
+        log_to_file(f"Loaded model from {args.model_path}")
+
     optimizer = optim.Adam(agent.parameters(), lr=args.learning_rate, eps=1e-5)
 
     log_to_file(f"Critic model: {agent.critic}")
