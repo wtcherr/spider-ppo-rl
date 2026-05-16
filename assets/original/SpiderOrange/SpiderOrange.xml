@@ -39,7 +39,7 @@
     <mesh file="Leg.BL.002.obj"/>
   </asset>
   <worldbody>
-    <body name="SpiderOrange">
+    <body name="Torso">
       <camera name="track" mode="trackcom" pos="0 -3 0.3" xyaxes="1 0 0 0 0 1"/>
       <camera name="track2" mode="trackcom" pos="0 -3 2.3" xyaxes="1 0 0 0 2.3 3"/>
       <joint armature="0" damping="0" limited="false" margin="0.01" name="root" pos="0 0 0" type="free"/>

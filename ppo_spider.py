@@ -235,12 +235,14 @@ def make_env(gym_id, seed, idx, capture_video, run_name, render):
                 gym_id,
                 render_mode="human",
                 xml_file="./scene.xml",
+                include_cfrc_ext_in_observation=False,
             )
         elif capture_video and idx == 0:
             env = gym.make(
                 gym_id,
                 render_mode="rgb_array",
                 xml_file="./scene.xml",
+                include_cfrc_ext_in_observation=False,
             )
             env = gym.wrappers.RecordVideo(
                 env, f"videos/{run_name}", step_trigger=lambda t: t % 50000 == 0
@@ -249,6 +251,7 @@ def make_env(gym_id, seed, idx, capture_video, run_name, render):
             env = gym.make(
                 gym_id,
                 xml_file="./scene.xml",
+                include_cfrc_ext_in_observation=False,
             )
 
         env = gym.wrappers.RecordEpisodeStatistics(env)
