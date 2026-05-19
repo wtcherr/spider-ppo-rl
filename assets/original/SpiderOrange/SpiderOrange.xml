@@ -18,7 +18,7 @@
       <geom group="3" type="mesh" density="800"/>
     </default>
     <default class="motor">
-      <motor ctrlrange="-1.0 1.0" gear="12"/>
+      <motor ctrlrange="-1.0 1.0" gear="16"/>
     </default>
   </default>
   <asset>
@@ -42,6 +42,8 @@
     <body name="Torso">
       <camera name="track" mode="trackcom" pos="0 -3 0.3" xyaxes="1 0 0 0 0 1"/>
       <camera name="track2" mode="trackcom" pos="0 -3 2.3" xyaxes="1 0 0 0 2.3 3"/>
+      <camera name="track3" mode="trackcom" pos="0 -2 0.3" xyaxes="1 0 0 0 0 1"/>
+      <camera name="track4" mode="trackcom" pos="0 -1 1.7" xyaxes="1 0 0 0 1.7 1"/>
       <joint armature="0" damping="0" limited="false" margin="0.01" name="root" pos="0 0 0" type="free"/>
       <geom mesh="Body" material="Material.001" class="visual"/>
       <geom mesh="Body" class="collision" density="400"/>

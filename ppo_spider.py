@@ -222,6 +222,98 @@ def parse_args():
         default=None,
         help="the target KL divergence threshold",
     )
+
+    # Environment specific arguments
+    parser.add_argument(
+        "--xml-file",
+        type=str,
+        default="./scene.xml",
+        help="the path to a MuJoCo model (default:'./scene.xml')",
+    )
+    parser.add_argument(
+        "--forward-reward-weight",
+        type=float,
+        default=5.0,
+        help="weight for forward reward",
+    )
+    parser.add_argument(
+        "--ctrl-cost-weight",
+        type=float,
+        default=0.035,
+        help="weight for control cost",
+    )
+    parser.add_argument(
+        "--contact-cost-weight",
+        type=float,
+        default=5e-4,
+        help="weight for contact cost",
+    )
+    parser.add_argument(
+        "--z-orientation-cost-weight",
+        type=float,
+        default=30.0,
+        help="weight for z-orientation variance cost",
+    )
+    parser.add_argument(
+        "--healthy-reward",
+        type=float,
+        default=1.0,
+        help="weight for healthy reward (survival reward) (default:1.0)",
+    )
+    parser.add_argument(
+        "--main-body-id",
+        type=int,
+        default=1,
+        help="ID of the body, whose displacement is used to calculate the dx/_forward_reward_ (default:`1`('Torso')) ignored if --main-body-name is not `None`",
+    )
+    parser.add_argument(
+        "--main-body-name",
+        type=str,
+        default=None,
+        help="name of the body, whose displacement is used to calculate the *dx*/_forward_reward_",
+    )
+    parser.add_argument(
+        "--terminate-when-unhealthy",
+        type=lambda x: bool(strtobool(x)),
+        default=True,
+        nargs="?",
+        const=True,
+        help="if `True`, issue a `terminated` signal is unhealthy",
+    )
+    parser.add_argument(
+        "--healthy-z-range",
+        type=tuple,
+        default=(-0.05, 0.5),
+        help="the spider is considered healthy if the z-coordinate of the torso is in this range",
+    )
+    parser.add_argument(
+        "--contact-force-range",
+        type=tuple,
+        default=(-1, 1),
+        help="contact forces are clipped to this range in the computation of contact_cost",
+    )
+    parser.add_argument(
+        "--reset-noise-scale",
+        type=float,
+        default=0.1,
+        help="scale of random perturbations of initial position and velocity (default:0.1)",
+    )
+    parser.add_argument(
+        "--exclude-current-positions-from-observation",
+        type=lambda x: bool(strtobool(x)),
+        default=True,
+        nargs="?",
+        const=True,
+        help="whether or not to omit the x- and y-coordinates from observations. Excluding the position can serve as an inductive bias to induce position-agnostic behavior in policies",
+    )
+    parser.add_argument(
+        "--include-cfrc-ext-in-observation",
+        type=lambda x: bool(strtobool(x)),
+        default=False,
+        nargs="?",
+        const=True,
+        help="whether to include cfrc_ext elements in the observations (default:False)",
+    )
     args = parser.parse_args()
     args.batch_size = int(args.num_envs * args.num_steps)
     args.minibatch_size = int(args.batch_size // args.num_minibatchs)
@@ -229,30 +321,36 @@ def parse_args():
 
 
 def make_env(gym_id, seed, idx, capture_video, run_name, render):
+    environment_args = {
+        "xml_file": args.xml_file,
+        "forward_reward_weight": args.forward_reward_weight,
+        "ctrl_cost_weight": args.ctrl_cost_weight,
+        "contact_cost_weight": args.contact_cost_weight,
+        "z_orientation_cost_weight": args.z_orientation_cost_weight,
+        "healthy_reward": args.healthy_reward,
+        "main_body": (
+            args.main_body_name
+            if args.main_body_name is not None
+            else args.main_body_id
+        ),
+        "terminate_when_unhealthy": args.terminate_when_unhealthy,
+        "healthy_z_range": args.healthy_z_range,
+        "contact_force_range": args.contact_force_range,
+        "reset_noise_scale": args.reset_noise_scale,
+        "exclude_current_positions_from_observation": args.exclude_current_positions_from_observation,
+        "include_cfrc_ext_in_observation": args.include_cfrc_ext_in_observation,
+    }
+
     def thunk():
         if render and idx == 0:
-            env = gym.make(
-                gym_id,
-                render_mode="human",
-                xml_file="./scene.xml",
-                include_cfrc_ext_in_observation=False,
-            )
+            env = gym.make(gym_id, render_mode="human", **environment_args)
         elif capture_video and idx == 0:
-            env = gym.make(
-                gym_id,
-                render_mode="rgb_array",
-                xml_file="./scene.xml",
-                include_cfrc_ext_in_observation=False,
-            )
+            env = gym.make(gym_id, render_mode="rgb_array", **environment_args)
             env = gym.wrappers.RecordVideo(
                 env, f"videos/{run_name}", step_trigger=lambda t: t % 50000 == 0
             )
         else:
-            env = gym.make(
-                gym_id,
-                xml_file="./scene.xml",
-                include_cfrc_ext_in_observation=False,
-            )
+            env = gym.make(gym_id, **environment_args)
 
         env = gym.wrappers.RecordEpisodeStatistics(env)
         env = gym.wrappers.ClipAction(env)
@@ -431,6 +529,9 @@ if __name__ == "__main__":
     episodic_reward_contact = np.zeros(args.num_envs)
     episodic_reward_z_orientation = np.zeros(args.num_envs)
     episodic_reward_survive = np.zeros(args.num_envs)
+    episodic_distance_from_origin = np.zeros(args.num_envs)
+    episodic_x_velocity = np.zeros(args.num_envs)
+    episodic_y_velocity = np.zeros(args.num_envs)
 
     for update in range(1, num_updates + 1):
         # Annealing the rate if instructed to do so.
@@ -460,6 +561,9 @@ if __name__ == "__main__":
             episodic_reward_contact += info["reward_contact"]
             episodic_reward_z_orientation += info["reward_z_orientation"]
             episodic_reward_survive += info["reward_survive"]
+            episodic_distance_from_origin += info["distance_from_origin"]
+            episodic_x_velocity += info["x_velocity"]
+            episodic_y_velocity += info["y_velocity"]
 
             rewards[step] = torch.Tensor(reward).to(device)
             next_obs = torch.Tensor(next_obs).to(device)
@@ -467,8 +571,13 @@ if __name__ == "__main__":
 
             if any(next_done):
                 finished_envs = next_done.cpu().numpy().astype(bool)
-                episodic_return = sum(info["episode"]["r"][finished_envs])
-                episodic_length = sum(info["episode"]["l"][finished_envs])
+                # Select the best environment among those that finished
+                finished_indices = np.where(finished_envs)[0]
+                best_idx_in_finished = np.argmax(info["episode"]["r"][finished_envs])
+                best_env_idx = finished_indices[best_idx_in_finished]
+
+                episodic_return = info["episode"]["r"][best_env_idx]
+                episodic_length = info["episode"]["l"][best_env_idx]
                 log_to_file(
                     f"global_step={global_step}, episodic_return={episodic_return}, episodic_length={episodic_length}"
                 )
@@ -480,34 +589,53 @@ if __name__ == "__main__":
                 )
                 writer.add_scalar(
                     "charts/episodic_reward_forward",
-                    np.sum(episodic_reward_forward[finished_envs]),
+                    episodic_reward_forward[best_env_idx],
                     global_step,
                 )
                 writer.add_scalar(
                     "charts/episodic_reward_ctrl",
-                    np.sum(episodic_reward_ctrl[finished_envs]),
+                    episodic_reward_ctrl[best_env_idx],
                     global_step,
                 )
                 writer.add_scalar(
                     "charts/episodic_reward_contact",
-                    np.sum(episodic_reward_contact[finished_envs]),
+                    episodic_reward_contact[best_env_idx],
                     global_step,
                 )
                 writer.add_scalar(
                     "charts/episodic_reward_z_orientation",
-                    np.sum(episodic_reward_z_orientation[finished_envs]),
+                    episodic_reward_z_orientation[best_env_idx],
                     global_step,
                 )
                 writer.add_scalar(
                     "charts/episodic_reward_survive",
-                    np.sum(episodic_reward_survive[finished_envs]),
+                    episodic_reward_survive[best_env_idx],
                     global_step,
                 )
+                writer.add_scalar(
+                    "charts/episodic_distance_from_origin",
+                    episodic_distance_from_origin[best_env_idx],
+                    global_step,
+                )
+                writer.add_scalar(
+                    "charts/episodic_x_velocity",
+                    episodic_x_velocity[best_env_idx],
+                    global_step,
+                )
+                writer.add_scalar(
+                    "charts/episodic_y_velocity",
+                    episodic_y_velocity[best_env_idx],
+                    global_step,
+                )
+                # Reset statistics for all finished environments
                 episodic_reward_forward[finished_envs] = 0
                 episodic_reward_ctrl[finished_envs] = 0
                 episodic_reward_contact[finished_envs] = 0
                 episodic_reward_z_orientation[finished_envs] = 0
                 episodic_reward_survive[finished_envs] = 0
+                episodic_distance_from_origin[finished_envs] = 0
+                episodic_x_velocity[finished_envs] = 0
+                episodic_y_velocity[finished_envs] = 0
 
         # bootstrap value if not done
         with torch.no_grad():
@@ -655,6 +783,26 @@ if __name__ == "__main__":
                 agent.save(checkpoint_path)
                 log_to_file(f"checkpoint saved to {checkpoint_path}")
 
+                # Save RMS statistics for checkpoints
+                def get_rms_stats(env):
+                    obs_rms = None
+                    ret_rms = None
+                    curr_env = env
+                    while hasattr(curr_env, "env"):
+                        if isinstance(curr_env, gym.wrappers.NormalizeObservation):
+                            obs_rms = curr_env.obs_rms
+                        if isinstance(curr_env, gym.wrappers.NormalizeReward):
+                            ret_rms = curr_env.return_rms
+                        curr_env = curr_env.env
+                    return obs_rms, ret_rms
+
+                obs_rms, ret_rms = get_rms_stats(envs.envs[0])
+                stats_base_path = checkpoint_path.replace(".pt", "")
+                if obs_rms is not None:
+                    torch.save(obs_rms, f"{stats_base_path}_obs_rms.pt")
+                if ret_rms is not None:
+                    torch.save(ret_rms, f"{stats_base_path}_ret_rms.pt")
+
     envs.close()
     writer.close()
 
@@ -662,3 +810,26 @@ if __name__ == "__main__":
         model_path = f"runs/{run_name}/{args.exp_name}"
         agent.save(model_path)
         log_to_file(f"model saved to {model_path}")
+
+        # Save RMS statistics
+        # Since we use SyncVectorEnv, we can take stats from the first environment
+        # as they should be similar across all parallel environments.
+        def get_rms_stats(env):
+            obs_rms = None
+            ret_rms = None
+            curr_env = env
+            while hasattr(curr_env, "env"):
+                if isinstance(curr_env, gym.wrappers.NormalizeObservation):
+                    obs_rms = curr_env.obs_rms
+                if isinstance(curr_env, gym.wrappers.NormalizeReward):
+                    ret_rms = curr_env.return_rms
+                curr_env = curr_env.env
+            return obs_rms, ret_rms
+
+        obs_rms, ret_rms = get_rms_stats(envs.envs[0])
+        if obs_rms is not None:
+            torch.save(obs_rms, f"{model_path}_obs_rms.pt")
+            log_to_file(f"observation RMS saved to {model_path}_obs_rms.pt")
+        if ret_rms is not None:
+            torch.save(ret_rms, f"{model_path}_ret_rms.pt")
+            log_to_file(f"reward RMS saved to {model_path}_ret_rms.pt")

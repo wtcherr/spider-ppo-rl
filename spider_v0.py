@@ -159,22 +159,22 @@ class SpiderEnv(AntEnv):
     The total reward is ***reward*** *=* *healthy_reward + forward_reward - ctrl_cost - contact_cost - z_orientation_cost*.
 
     - *healthy_reward*:
-    Every timestep that the Ant is healthy (see definition in section "Episode End"),
+    Every timestep that the Spider is healthy (see definition in section "Episode End"),
     it gets a reward of fixed value `healthy_reward` (default is $1$).
     - *forward_reward*:
     A reward for moving forward,
-    this reward would be positive if the Ant moves forward (in the positive $x$ direction / in the right direction).
+    this reward would be positive if the Spider moves forward (in the positive $x$ direction / in the right direction).
     $w_{forward} \times \frac{dx}{dt}$, where
     $dx$ is the displacement of the `main_body` ($x_{after-action} - x_{before-action}$),
     $dt$ is the time between actions, which depends on the `frame_skip` parameter (default is $5$),
     and `frametime`, which is $0.01$ - so the default is $dt = 5 \times 0.01 = 0.05$,
     $w_{forward}$ is the `forward_reward_weight` (default is $1$).
     - *ctrl_cost*:
-    A negative reward to penalize the Ant for taking actions that are too large.
+    A negative reward to penalize the Spider for taking actions that are too large.
     $w_{control} \times \|action\|_2^2$,
     where $w_{control}$ is `ctrl_cost_weight` (default is $0.5$).
     - *contact_cost*:
-    A negative reward to penalize the Ant if the external contact forces are too large.
+    A negative reward to penalize the Spider if the external contact forces are too large.
     $w_{contact} \times \|F_{contact}\|_2^2$, where
     $w_{contact}$ is `contact_cost_weight` (default is $5\times10^{-4}$),
     $F_{contact}$ are the external contact forces clipped by `contact_force_range` (see `cfrc_ext` section on Observation Space).
@@ -205,28 +205,29 @@ class SpiderEnv(AntEnv):
 
     ## Arguments
     Spider provides a range of parameters to modify the observation space, reward function, initial state, and termination condition.
-    These parameters can be applied during `gymnasium.make` in the following way:
+    These parameters can be applied during `gymnasium.make` after registering the environment first in the following way:
 
     ```python
     import gymnasium as gym
-    env = gym.make('Ant-v5', ctrl_cost_weight=0.5, ...)
+    gym.register(id="mujoco_env/Spider-v0", entry_point=SpiderEnv, max_episode_steps=1000)
+    env = gym.make('spider_v0', ctrl_cost_weight=0.5, ...)
     ```
 
-    | Parameter                                  | Type       | Default      |Description                    |
-    |--------------------------------------------|------------|--------------|-------------------------------|
-    |`xml_file`                                  | **str**    | `"ant.xml"`  | Path to a MuJoCo model                                                                                                                                                                                      |
-    |`forward_reward_weight`                     | **float**  | `1`          | Weight for _forward_reward_ term (see `Rewards` section)                                                                                                                                                    |
-    |`ctrl_cost_weight`                          | **float**  | `0.5`        | Weight for _ctrl_cost_ term (see `Rewards` section)                                                                                                                                                         |
-    |`contact_cost_weight`                       | **float**  | `5e-4`       | Weight for _contact_cost_ term (see `Rewards` section)                                                                                                                                                      |
-    |`healthy_reward`                            | **float**  | `1`          | Weight for _healthy_reward_ term (see `Rewards` section)                                                                                                                                                    |
-    |`main_body`                                 |**str\|int**| `1`("torso") | Name or ID of the body, whose displacement is used to calculate the *dx*/_forward_reward_ (useful for custom MuJoCo models) (see `Rewards` section)                                                         |
-    |`terminate_when_unhealthy`                  | **bool**   | `True`       | If `True`, issue a `terminated` signal is unhealthy (see `Episode End` section)                                                                                                                                |
-    |`healthy_z_range`                           | **tuple**  | `(0.2, 1)`   | The ant is considered healthy if the z-coordinate of the torso is in this range (see `Episode End` section)                                                                                                 |
-    |`contact_force_range`                       | **tuple**  | `(-1, 1)`    | Contact forces are clipped to this range in the computation of *contact_cost* (see `Rewards` section)                                                                                                       |
-    |`reset_noise_scale`                         | **float**  | `0.1`        | Scale of random perturbations of initial position and velocity (see `Starting State` section)                                                                                                               |
-    |`exclude_current_positions_from_observation`| **bool**   | `True`       | Whether or not to omit the x- and y-coordinates from observations. Excluding the position can serve as an inductive bias to induce position-agnostic behavior in policies (see `Observation State` section) |
-    |`include_cfrc_ext_in_observation`           | **bool**   | `True`       | Whether to include *cfrc_ext* elements in the observations (see `Observation State` section)                                                                                                                |
-    |`use_contact_forces` (`v4` only)            | **bool**   | `False`      | If `True`, it extends the observation space by adding contact forces (see `Observation Space` section) and includes contact_cost to the reward function (see `Rewards` section)                             |
+    | Parameter                                  | Type       | Default        |Description                    |
+    |--------------------------------------------|------------|----------------|-------------------------------|
+    |`xml_file`                                  | **str**    | `"scene.xml"`  | Path to a MuJoCo model                                                                                                                                                                                      |
+    |`forward_reward_weight`                     | **float**  | `5`            | Weight for _forward_reward_ term (see `Rewards` section)                                                                                                                                                    |
+    |`ctrl_cost_weight`                          | **float**  | `0.035`          | Weight for _ctrl_cost_ term (see `Rewards` section)                                                                                                                                                         |
+    |`contact_cost_weight`                       | **float**  | `5e-4`         | Weight for _contact_cost_ term (see `Rewards` section)                                                                                                                                                      |
+    |`z_orientation_cost_weight`                 | **float**  | `30`           | Weight for _z_orientation_cost_ term (see `Rewards` section)                                                                                                                                                |
+    |`healthy_reward`                            | **float**  | `1`            | Weight for _healthy_reward_ term (see `Rewards` section)                                                                                                                                                    |
+    |`main_body`                                 |**str\|int**| `1`("Torso")   | Name or ID of the body, whose displacement is used to calculate the *dx*/_forward_reward_ (useful for custom MuJoCo models) (see `Rewards` section)                                                         |
+    |`terminate_when_unhealthy`                  | **bool**   | `True`         | If `True`, issue a `terminated` signal is unhealthy (see `Episode End` section)                                                                                                                             |
+    |`healthy_z_range`                           | **tuple**  | `(-0.05, 0.5)` | The spider is considered healthy if the z-coordinate of the torso is in this range (see `Episode End` section)                                                                                              |
+    |`contact_force_range`                       | **tuple**  | `(-1, 1)`      | Contact forces are clipped to this range in the computation of *contact_cost* (see `Rewards` section)                                                                                                       |
+    |`reset_noise_scale`                         | **float**  | `0.1`          | Scale of random perturbations of initial position and velocity (see `Starting State` section)                                                                                                               |
+    |`exclude_current_positions_from_observation`| **bool**   | `True`         | Whether or not to omit the x- and y-coordinates from observations. Excluding the position can serve as an inductive bias to induce position-agnostic behavior in policies (see `Observation State` section) |
+    |`include_cfrc_ext_in_observation`           | **bool**   | `True`         | Whether to include *cfrc_ext* elements in the observations (see `Observation State` section)                                                                                                                |
 
     ## Version History
     * v0: Initial versions release
