@@ -15,14 +15,14 @@ class SpiderEnv(AntEnv):
     The spider is a 3D quadruped robot consisting of a torso (free rotational body) with four legs attached to it, where each leg has three body parts.
     The goal is to coordinate the four legs to move in the forward (right) direction by applying torque to the four balls and eight hinges connecting the three body parts of each leg and the torso (thirteen body parts, four balls and eight hinges).
 
-    Note: Although the robot is called "Spider", it is actually 75cm tall and weighs 1239.76g, with the torso being 620.52g and each leg being 154.81g.
+    The robot is called "Spider", it is actually 20cm tall and weighs 1239.76g, with the torso being 620.52g and each leg being 154.81g.
 
     ## Action Space
     ```{figure} action_space_figures/ant.png
     :name: ant
     ```
 
-    The action space is a `Box(-1, 1, (8,), float32)`. An action represents the torques applied at the hinge joints.
+    The action space is a `Box(-1, 1, (12,), float32)`. An action represents the torques applied at the ball and hinge joints.
 
     | Num | Action                                                                | Control Min | Control Max | Name            | Joint | Type (Unit)  |
     | --- | --------------------------------------------------------------------- | ----------- | ----------- | --------------- | ----- | ------------ |
@@ -58,7 +58,7 @@ class SpiderEnv(AntEnv):
 
     | Num | Observation                                                     | Min      | Max      | Name                             | Joint | Type (Unit)                    |
     |-----|-----------------------------------------------------------------|----------|----------|----------------------------------|-------|--------------------------------|
-    | 0   | z-component of the torso
+    | 0   | z-component of the torso                                        | -Inf     | Inf      | Torso                            | free  | quaternion                     |
     | 1   | w-component quaternion of torso                                 | -Inf     | Inf      | Torso                            | free  | quaternion                     |
     | 2   | x-component quaternion of torso                                 | -Inf     | Inf      | Torso                            | free  | quaternion                     |
     | 3   | y-component quaternion of torso                                 | -Inf     | Inf      | Torso                            | free  | quaternion                     |
@@ -133,19 +133,15 @@ class SpiderEnv(AntEnv):
     |------------------------------------------------------------|----------------|
     | worldbody (constant reference body)                        | 0              |
     | Torso (main body / centre body)                            | 1              |
-
     | FL_Leg (front-left upper leg / hip segment)                | 2              |
     | FL_Leg_001 (front-left middle leg segment)                 | 3              |
     | FL_Leg_002 (front-left lower leg / foot segment)           | 4              |
-
     | FR_Leg (front-right upper leg / hip segment)               | 5              |
     | FR_Leg_001 (front-right middle leg segment)                | 6              |
     | FR_Leg_002 (front-right lower leg / foot segment)          | 7              |
-
     | BR_Leg (back-right upper leg / hip segment)                | 8              |
     | BR_Leg_001 (back-right middle leg segment)                 | 9              |
     | BR_Leg_002 (back-right lower leg / foot segment)           | 10             |
-
     | BL_Leg (back-left upper leg / hip segment)                 | 11             |
     | BL_Leg_001 (back-left middle leg segment)                  | 12             |
     | BL_Leg_002 (back-left lower leg / foot segment)            | 13             |
