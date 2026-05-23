@@ -50,7 +50,7 @@ This project implements a Reinforcement Learning environment and training pipeli
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/yourusername/spider-ppo-rl.git
+   git clone https://github.com/wtcherr/spider-ppo-rl.git
    cd spider-ppo-rl
    ```
 
