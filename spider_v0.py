@@ -174,9 +174,7 @@ class SpiderEnv(AntEnv):
     $w_{contact} \times \|F_{contact}\|_2^2$, where
     $w_{contact}$ is `contact_cost_weight` (default is $5\times10^{-4}$),
     $F_{contact}$ are the external contact forces clipped by `contact_force_range` (see `cfrc_ext` section on Observation Space).
-    - *z_orientation_cost*:
-    A negative reward to penalize the Spider if the local z-axis of the torso changes too much between steps.
-    //TODO add info
+    - *z-orientation_cost*: $w_{z\_orient} \times (1 - \vec{z}_{before} \cdot \vec{z}_{after})$ (Penalizes rapid changes or wobbling in the torso's upright orientation, where $\vec{z}$ is the local z-axis vector).
 
     `info` contains the individual reward terms.
 
@@ -213,7 +211,7 @@ class SpiderEnv(AntEnv):
     |--------------------------------------------|------------|----------------|-------------------------------|
     |`xml_file`                                  | **str**    | `"scene.xml"`  | Path to a MuJoCo model                                                                                                                                                                                      |
     |`forward_reward_weight`                     | **float**  | `5`            | Weight for _forward_reward_ term (see `Rewards` section)                                                                                                                                                    |
-    |`ctrl_cost_weight`                          | **float**  | `0.035`          | Weight for _ctrl_cost_ term (see `Rewards` section)                                                                                                                                                         |
+    |`ctrl_cost_weight`                          | **float**  | `0.035`        | Weight for _ctrl_cost_ term (see `Rewards` section)                                                                                                                                                         |
     |`contact_cost_weight`                       | **float**  | `5e-4`         | Weight for _contact_cost_ term (see `Rewards` section)                                                                                                                                                      |
     |`z_orientation_cost_weight`                 | **float**  | `30`           | Weight for _z_orientation_cost_ term (see `Rewards` section)                                                                                                                                                |
     |`healthy_reward`                            | **float**  | `1`            | Weight for _healthy_reward_ term (see `Rewards` section)                                                                                                                                                    |

@@ -1,14 +1,14 @@
-# Quadrupedal RL (Spider Robot)
+# Quadrupedal Spider PPO RL (Spider Robot)
 
 This project implements a Reinforcement Learning environment and training pipeline for a quadrupedal "Spider" robot using MuJoCo and Gymnasium. It features a custom PPO (Proximal Policy Optimization) implementation to train the robot to walk forward.
 
 ## Preview
 
-|                                                                                                                  Top View                                                                                                                  |                                                                                                                        Top View (Close-up)                                                                                                                         |
-| :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-|  [![Top Walk](https://raw.githubusercontent.com/wtcherr/quadrupedal-rl/refs/heads/master/pictures/spider_walk_top_thumpnail.jpg)](https://raw.githubusercontent.com/wtcherr/quadrupedal-rl/refs/heads/master/videos/spider_walk_top.mp4)   |  [![Top Walk Closeup](https://raw.githubusercontent.com/wtcherr/quadrupedal-rl/refs/heads/master/pictures/spider_walk_top_closeup_thumpnail.jpg)](https://raw.githubusercontent.com/wtcherr/quadrupedal-rl/refs/heads/master/videos/spider_walk_top_closeup.mp4)   |
-|                                                                                                               **Side View**                                                                                                                |                                                                                                                      **Side View (Close-up)**                                                                                                                      |
-| [![Side Walk](https://raw.githubusercontent.com/wtcherr/quadrupedal-rl/refs/heads/master/pictures/spider_walk_side_thumpnail.jpg)](https://raw.githubusercontent.com/wtcherr/quadrupedal-rl/refs/heads/master/videos/spider_walk_side.mp4) | [![Side Walk Closeup](https://raw.githubusercontent.com/wtcherr/quadrupedal-rl/refs/heads/master/pictures/spider_walk_side_closeup_thumpnail.jpg)](https://raw.githubusercontent.com/wtcherr/quadrupedal-rl/refs/heads/master/videos/spider_walk_side_closeup.mp4) |
+|                                 Top View                                 |                                       Top View (Close-up)                                        |
+| :----------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------: |
+|  [![Top Walk](videos/spider_walk_top.gif)](videos/spider_walk_top.mp4)   |  [![Top Walk Closeup](videos/spider_walk_top_closeup.gif)](videos/spider_walk_top_closeup.mp4)   |
+|                              **Side View**                               |                                     **Side View (Close-up)**                                     |
+| [![Side Walk](videos/spider_walk_side.gif)](videos/spider_walk_side.mp4) | [![Side Walk Closeup](videos/spider_walk_side_closeup.gif)](videos/spider_walk_side_closeup.mp4) |
 
 ---
 
@@ -50,8 +50,8 @@ This project implements a Reinforcement Learning environment and training pipeli
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/yourusername/quadrupedal-rl.git
-   cd quadrupedal-rl
+   git clone https://github.com/yourusername/spider-ppo-rl.git
+   cd spider-ppo-rl
    ```
 
 2. **Create a virtual environment and install dependencies:**
@@ -200,7 +200,7 @@ $Reward = Healthy\_reward + Forward\_reward - Ctrl\_cost - Contact\_cost - Z\_or
 - **Healthy Reward**: Fixed reward ($+1.0$) awarded for every step the robot is "healthy".
 - **Control Cost**: $w_{control} \times \|action\|_2^2$ (Penalizes excessive joint torque).
 - **Contact Cost**: $w_{contact} \times \|F_{contact}\|_2^2$ (Penalizes high impact forces).
-- **Z-Orientation Cost**: Penalizes deviations of the torso's local z-axis from the global upright position.
+- **Z-Orientation Cost**: $w_{z\_orient} \times (1 - \vec{z}_{before} \cdot \vec{z}_{after})$ (Penalizes rapid changes or wobbling in the torso's upright orientation, where $\vec{z}$ is the local z-axis vector).
 
 ### Episode End
 
@@ -228,14 +228,21 @@ env = gym.make('mujoco_env/Spider-v0',
 )
 ```
 
-| Parameter                                    | Default        | Description                            |
-| :------------------------------------------- | :------------- | :------------------------------------- |
-| `xml_file`                                   | `"scene.xml"`  | Path to the MuJoCo model.              |
-| `forward_reward_weight`                      | `5.0`          | Weight for velocity progress.          |
-| `ctrl_cost_weight`                           | `0.035`        | Weight for control penalty.            |
-| `z_orientation_cost_weight`                  | `30.0`         | Penalty for not staying level.         |
-| `healthy_z_range`                            | `(-0.05, 0.5)` | Acceptable height range for the torso. |
-| `exclude_current_positions_from_observation` | `True`         | Omit x/y coordinates from state.       |
+| Parameter                                    | Type         | Default        | Description                                                                                                                                                                                                 |
+| -------------------------------------------- | ------------ | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `xml_file`                                   | **str**      | `"scene.xml"`  | Path to a MuJoCo model                                                                                                                                                                                      |
+| `forward_reward_weight`                      | **float**    | `5`            | Weight for _forward_reward_ term (see `Rewards` section)                                                                                                                                                    |
+| `ctrl_cost_weight`                           | **float**    | `0.035`        | Weight for _ctrl_cost_ term (see `Rewards` section)                                                                                                                                                         |
+| `contact_cost_weight`                        | **float**    | `5e-4`         | Weight for _contact_cost_ term (see `Rewards` section)                                                                                                                                                      |
+| `z_orientation_cost_weight`                  | **float**    | `30`           | Weight for _z_orientation_cost_ term (see `Rewards` section)                                                                                                                                                |
+| `healthy_reward`                             | **float**    | `1`            | Weight for _healthy_reward_ term (see `Rewards` section)                                                                                                                                                    |
+| `main_body`                                  | **str\|int** | `1`("Torso")   | Name or ID of the body, whose displacement is used to calculate the _dx_/_forward_reward_ (useful for custom MuJoCo models) (see `Rewards` section)                                                         |
+| `terminate_when_unhealthy`                   | **bool**     | `True`         | If `True`, issue a `terminated` signal is unhealthy (see `Episode End` section)                                                                                                                             |
+| `healthy_z_range`                            | **tuple**    | `(-0.05, 0.5)` | The spider is considered healthy if the z-coordinate of the torso is in this range (see `Episode End` section)                                                                                              |
+| `contact_force_range`                        | **tuple**    | `(-1, 1)`      | Contact forces are clipped to this range in the computation of _contact_cost_ (see `Rewards` section)                                                                                                       |
+| `reset_noise_scale`                          | **float**    | `0.1`          | Scale of random perturbations of initial position and velocity (see `Starting State` section)                                                                                                               |
+| `exclude_current_positions_from_observation` | **bool**     | `True`         | Whether or not to omit the x- and y-coordinates from observations. Excluding the position can serve as an inductive bias to induce position-agnostic behavior in policies (see `Observation State` section) |
+| `include_cfrc_ext_in_observation`            | **bool**     | `True`         | Whether to include _cfrc_ext_ elements in the observations (see `Observation State` section)                                                                                                                |
 
 ## Development Process
 
@@ -259,9 +266,23 @@ env = gym.make('mujoco_env/Spider-v0',
 
 ### Network Architecture
 
-- **Actor (Policy)**: MLP (55 -> 256 -> 256 -> 128 -> 12) with Tanh activations.
-- **Critic (Value)**: MLP (55 -> 256 -> 256 -> 128 -> 1) with Tanh activations.
+**Actor (Policy Network):**
+
+```
+Input (55) → FC(256) → Tanh → FC(256) → Tanh → FC(128) → Tanh → FC(12)
+                                                                    ↓
+                                                            Action Mean + Log Std
+```
+
 - **Action Distribution**: Diagonal Gaussian with learned log standard deviation.
+
+**Critic (Value Network):**
+
+```
+Input (55) → FC(256) → Tanh → FC(256) → Tanh → FC(128) → Tanh → FC(1)
+                                                                    ↓
+                                                               State Value
+```
 
 ### Key Techniques
 
@@ -293,26 +314,33 @@ env = gym.make('mujoco_env/Spider-v0',
 
 The initial run focused on survival. The model learned a stable, symmetric gait but moved slowly.
 
-|                     Episodic Return                      |                         Forward Reward                          |                           Survival Reward                           |
-| :------------------------------------------------------: | :-------------------------------------------------------------: | :-----------------------------------------------------------------: |
-| ![Episodic Return](charts/first-run/episodic_return.svg) | ![Forward Reward](charts/first-run/episodic_reward_forward.svg) | ![Survival    Reward](charts/first-run/episodic_reward_survive.svg) |
+| Metric              |                              Chart                               |
+| :------------------ | :--------------------------------------------------------------: |
+| **Episodic Return** |     ![Episodic Return](charts/first-run/episodic_return.svg)     |
+| **Forward Reward**  | ![Forward Reward](charts/first-run/episodic_reward_forward.svg)  |
+| **Survival Reward** | ![Survival Reward](charts/first-run/episodic_reward_survive.svg) |
 
 ### Second Training Run: Speed & Optimization
 
-Fine-tuning from the first checkpoint with increased motor gear and higher forward reward weight. This resulted in significantly faster locomotion while maintaining
-stability.
+Fine-tuning from the first checkpoint with increased motor gear and higher forward reward weight. This resulted in significantly faster locomotion while maintaining stability.
 
 #### Performance Metrics
 
-|                         Episodic Return                         |                       Forward Velocity                        |                          Distance from Origin                          |
-| :-------------------------------------------------------------: | :-----------------------------------------------------------: | :--------------------------------------------------------------------: |
-| ![Episodic Return](charts/second-run/stats/episodic_return.svg) | ![XVelocity](charts/second-run/stats/episodic_x_velocity.svg) | ![Distance](charts/second-run/stats/episodic_distance_from_origin.svg) |
+| Metric                   |                                  Chart                                  |
+| :----------------------- | :---------------------------------------------------------------------: |
+| **Episodic Return**      |     ![Episodic Return](charts/second-run/stats/episodic_return.svg)     |
+| **Forward Reward**       | ![Forward Reward](charts/second-run/stats/episodic_reward_forward.svg)  |
+| **Survival Reward**      | ![Survival Reward](charts/second-run/stats/episodic_reward_survive.svg) |
+| **Forward Velocity**     |      ![XVelocity](charts/second-run/stats/episodic_x_velocity.svg)      |
+| **Distance from Origin** | ![Distance](charts/second-run/stats/episodic_distance_from_origin.svg)  |
 
 #### Training Stability
 
-|                       Policy Loss                        |                       Value Loss                       |                      Approx KL                       |
-| :------------------------------------------------------: | :----------------------------------------------------: | :--------------------------------------------------: |
-| ![Policy Loss](charts/second-run/losses/policy_loss.svg) | ![Value Loss](charts/second-run/losses/value_loss.svg) | ![Approx KL](charts/second-run/losses/approx_kl.svg) |
+| Metric          |                          Chart                           |
+| :-------------- | :------------------------------------------------------: |
+| **Policy Loss** | ![Policy Loss](charts/second-run/losses/policy_loss.svg) |
+| **Value Loss**  |  ![Value Loss](charts/second-run/losses/value_loss.svg)  |
+| **Approx KL**   |   ![Approx KL](charts/second-run/losses/approx_kl.svg)   |
 
 ---
 
